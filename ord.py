@@ -8,21 +8,24 @@ import random
 # metodo por inserção
 def insertion_sort(lista):
     comparacoes = 0
+    trocas = 0
     for i in range(1, len(lista)):
         chave = lista[i]
         j = i - 1
         while j >= 0 and lista[j] > chave:
-            lista[j + 1] = lista[j]
+            lista[j + 1] = lista[j]  # desloca elemento uma posição
             j -= 1
             comparacoes += 1
+            trocas += 1            # cada deslocamento conta como troca
         lista[j + 1] = chave
         comparacoes += 1
-    return lista, comparacoes
+    return lista, comparacoes, trocas
 
 
 # método por seleção
 def selection_sort(lista):
     comparacoes = 0
+    trocas = 0
     n = len(lista)
     for i in range(n):
         min_idx = i
@@ -30,13 +33,16 @@ def selection_sort(lista):
             comparacoes += 1
             if lista[j] < lista[min_idx]:
                 min_idx = j
-        lista[i], lista[min_idx] = lista[min_idx], lista[i]
-    return lista, comparacoes
+        if min_idx != i:
+            lista[i], lista[min_idx] = lista[min_idx], lista[i]  # swap real
+            trocas += 1                                           # 1 swap = 1 troca
+    return lista, comparacoes, trocas
 
 
 # metodo híbrido
 def shell_sort(lista):
     comparacoes = 0
+    trocas = 0
     n = len(lista)
     gap = n // 2
     while gap > 0:
@@ -44,16 +50,19 @@ def shell_sort(lista):
             temp = lista[i]
             j = i
             while j >= gap and lista[j - gap] > temp:
-                lista[j] = lista[j - gap]
+                lista[j] = lista[j - gap]  # desloca elemento pelo gap
                 j -= gap
                 comparacoes += 1
+                trocas += 1               # cada deslocamento conta como troca
             lista[j] = temp
             comparacoes += 1
         gap //= 2
-    return lista, comparacoes
+    return lista, comparacoes, trocas
 
-# metodo por partiçao
+
+# metodo por partição
 comparacoes_merge = 0
+trocas_merge = 0
 
 def merge_sort(lista):
     global comparacoes_merge
@@ -65,7 +74,7 @@ def merge_sort(lista):
     return merge(esq, dir)
 
 def merge(esq, dir):
-    global comparacoes_merge
+    global comparacoes_merge, trocas_merge
     resultado = []
     i = j = 0
     while i < len(esq) and j < len(dir):
@@ -76,41 +85,51 @@ def merge(esq, dir):
         else:
             resultado.append(dir[j])
             j += 1
-    resultado.extend(esq[i:])
-    resultado.extend(dir[j:])
+        trocas_merge += 1          # cada elemento copiado para o resultado = 1 troca
+    # copia os elementos restantes
+    for x in esq[i:]:
+        resultado.append(x)
+        trocas_merge += 1
+    for x in dir[j:]:
+        resultado.append(x)
+        trocas_merge += 1
     return resultado
 
 
-# rodar o altoritmo e medir o tempo
+# rodar o algoritmo e medir o tempo
 def executar(func, lista_original, usa_global=False):
-    global comparacoes_merge
+    global comparacoes_merge, trocas_merge
     lista = lista_original.copy()
 
     inicio = time.perf_counter()
 
     if usa_global:
         comparacoes_merge = 0
+        trocas_merge = 0
         lista = func(lista)
         comparacoes = comparacoes_merge
+        trocas = trocas_merge
     else:
-        lista, comparacoes = func(lista)
+        lista, comparacoes, trocas = func(lista)
 
     fim = time.perf_counter()
     tempo = (fim - inicio) * 1000  # em milissegundos
 
-    return lista, comparacoes, tempo
+    return lista, comparacoes, trocas, tempo
 
 
 # resultados
 def exibir_relatorio(resultados, n):
-    print("\n" + "=" * 58)
+    print("\n" + "=" * 20)
     print(f"  relatorio — {n} elementos")
-    print("=" * 58)
-    print(f"  {'Algoritmo':<18} {'Big-O':<14} {'Comparações':>12} {'Tempo':>8}")
-    print("-" * 58)
+    print("=" * 20)
+    print(f"  {'Algoritmo':<18} {'Big-O':<14} {'Comparações':>12} {'Trocas':>10} {'Tempo':>8}")
+    print("-" * 20)
     for r in resultados:
-        print(f"  {r['nome']:<18} {r['big_o']:<14} {r['comparacoes']:>12,} {r['tempo']:>6.3f}ms")
-    print("=" * 58)
+        print(
+            f"  {r['nome']:<18} {r['big_o']:<14} "
+            f"{r['comparacoes']:>12,} {r['trocas']:>10,} {r['tempo']:>6.3f}ms"
+        )
 
 # add vetor manualmente
 def entrada_manual():
@@ -146,13 +165,14 @@ def rodar_algoritmos(lista_original):
     lista_final = None
 
     for alg in algoritmos:
-        lista_ord, comp, tempo = executar(alg["func"], lista_original, alg["global"])
+        lista_ord, comp, trocas, tempo = executar(alg["func"], lista_original, alg["global"])
         if lista_final is None:
             lista_final = lista_ord
         resultados.append({
             "nome":        alg["nome"],
             "big_o":       alg["big_o"],
             "comparacoes": comp,
+            "trocas":      trocas,
             "tempo":       tempo,
         })
 
@@ -160,13 +180,13 @@ def rodar_algoritmos(lista_original):
 
 # menu principal
 def menu():
-    print("\n" + "=" * 58)
+    print("\n" + "=" * 20)
     print("  MÉTODOS DE ORDENAÇÃO COM BIG-O")
-    print("=" * 58)
+    print("=" * 20)
     print("  [1] Add vetor manualmente")
     print("  [2] Testes de vetores pequenos, médios e grandes")
     print("  [0] exit")
-    print("-" * 58)
+    print("-" * 20)
     return input("  escolha uma opção: ").strip()
 
 # programa principal
