@@ -1,6 +1,29 @@
 import time
 import random
 
+
+# rodar o algoritmo e medir o tempo
+def executar(func, listaOriginal, usaGlobal=False):
+    global comparacoesMerge, trocasMerge
+    lista = listaOriginal.copy()
+
+    inicio = time.perf_counter()
+
+    if usaGlobal:
+        comparacoesMerge = 0
+        trocasMerge = 0
+        lista = func(lista)
+        comparacoes = comparacoesMerge
+        trocas = trocasMerge
+    else:
+        lista, comparacoes, trocas = func(lista)
+
+    fim = time.perf_counter()
+    tempo = (fim - inicio) * 1000  # em milissegundos
+
+    return lista, comparacoes, trocas, tempo
+
+
 # metodo por inserção
 def inserção(lista):
     comparacoes = 0
@@ -90,28 +113,6 @@ def partição(esq, dir):
         resultado.append(x)
         trocasMerge += 1
     return resultado
-
-
-# rodar o algoritmo e medir o tempo
-def executar(func, listaOriginal, usaGlobal=False):
-    global comparacoesMerge, trocasMerge
-    lista = listaOriginal.copy()
-
-    inicio = time.perf_counter()
-
-    if usaGlobal:
-        comparacoesMerge = 0
-        trocasMerge = 0
-        lista = func(lista)
-        comparacoes = comparacoesMerge
-        trocas = trocasMerge
-    else:
-        lista, comparacoes, trocas = func(lista)
-
-    fim = time.perf_counter()
-    tempo = (fim - inicio) * 1000  # em milissegundos
-
-    return lista, comparacoes, trocas, tempo
 
 
 # resultados
