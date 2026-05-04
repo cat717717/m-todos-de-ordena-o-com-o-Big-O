@@ -1,3 +1,5 @@
+# metodo de ordenação com big-o - nathan, gustavo, helen e lennon
+
 import time
 import random
 
@@ -83,7 +85,6 @@ def híbrido(lista):
 comparacoesMerge = 0
 trocasMerge = 0
 
-# CORREÇÃO 1: chamadas recursivas usam partiçãosort (não partição)
 def partiçãosort(lista):
     global comparacoesMerge
     if len(lista) <= 1:
@@ -181,7 +182,7 @@ def menu():
     print("/" * 20)
     print("  [1] Add vetor manualmente")
     print("  [2] Testes de vetores pequenos, médios e grandes")
-    print("  [0] exit")
+    print("  [0] sair")
     print("/" * 20)
     return input("  escolha uma opção: ").strip()
 
