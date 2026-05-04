@@ -9,10 +9,10 @@ def inserção(lista):
         chave = lista[i]
         j = i - 1
         while j >= 0 and lista[j] > chave:
-            lista[j + 1] = lista[j]  # desloca elemento uma posição
+            lista[j + 1] = lista[j]  
             j -= 1
             comparacoes += 1
-            trocas += 1            # cada deslocamento conta como troca
+            trocas += 1            
         lista[j + 1] = chave
         comparacoes += 1
     return lista, comparacoes, trocas
@@ -30,8 +30,8 @@ def seleção(lista):
             if lista[j] < lista[minIdx]:
                 minIdx = j
         if minIdx != i:
-            lista[i], lista[minIdx] = lista[minIdx], lista[i]  # swap real
-            trocas += 1                                         # 1 swap = 1 troca
+            lista[i], lista[minIdx] = lista[minIdx], lista[i]  
+            trocas += 1                                         
     return lista, comparacoes, trocas
 
 
@@ -46,10 +46,10 @@ def híbrido(lista):
             temp = lista[i]
             j = i
             while j >= gap and lista[j - gap] > temp:
-                lista[j] = lista[j - gap]  # desloca elemento pelo gap
+                lista[j] = lista[j - gap] 
                 j -= gap
                 comparacoes += 1
-                trocas += 1               # cada deslocamento conta como troca
+                trocas += 1              
             lista[j] = temp
             comparacoes += 1
         gap //= 2
@@ -82,8 +82,7 @@ def partição(esq, dir):
         else:
             resultado.append(dir[j])
             j += 1
-        trocasMerge += 1          # cada elemento copiado para o resultado = 1 troca
-    # copia os elementos restantes
+        trocasMerge += 1          
     for x in esq[i:]:
         resultado.append(x)
         trocasMerge += 1
@@ -155,7 +154,6 @@ def rodarAlgoritmos(listaOriginal):
         {"nome": "inserção",  "bigO": "O(n²)",       "func": inserção,    "global": False},
         {"nome": "seleção",   "bigO": "O(n²)",       "func": seleção,     "global": False},
         {"nome": "híbrido",   "bigO": "O(n log² n)", "func": híbrido,     "global": False},
-        # CORREÇÃO 2: func aponta para partiçãosort (não partição)
         {"nome": "partição",  "bigO": "O(n log n)",  "func": partiçãosort, "global": True},
     ]
 
