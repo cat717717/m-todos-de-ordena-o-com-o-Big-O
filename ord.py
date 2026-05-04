@@ -9,10 +9,10 @@ def inserção(lista):
         chave = lista[i]
         j = i - 1
         while j >= 0 and lista[j] > chave:
-            lista[j + 1] = lista[j] 
+            lista[j + 1] = lista[j]  # desloca elemento uma posição
             j -= 1
             comparacoes += 1
-            trocas += 1          
+            trocas += 1            # cada deslocamento conta como troca
         lista[j + 1] = chave
         comparacoes += 1
     return lista, comparacoes, trocas
@@ -30,8 +30,8 @@ def seleção(lista):
             if lista[j] < lista[minIdx]:
                 minIdx = j
         if minIdx != i:
-            lista[i], lista[minIdx] = lista[minIdx], lista[i] 
-            trocas += 1                                         
+            lista[i], lista[minIdx] = lista[minIdx], lista[i]  # swap real
+            trocas += 1                                         # 1 swap = 1 troca
     return lista, comparacoes, trocas
 
 
@@ -46,10 +46,10 @@ def híbrido(lista):
             temp = lista[i]
             j = i
             while j >= gap and lista[j - gap] > temp:
-                lista[j] = lista[j - gap]  
+                lista[j] = lista[j - gap]  # desloca elemento pelo gap
                 j -= gap
                 comparacoes += 1
-                trocas += 1               
+                trocas += 1               # cada deslocamento conta como troca
             lista[j] = temp
             comparacoes += 1
         gap //= 2
@@ -60,16 +60,17 @@ def híbrido(lista):
 comparacoesMerge = 0
 trocasMerge = 0
 
-def partição(lista):
+# CORREÇÃO 1: chamadas recursivas usam partiçãosort (não partição)
+def partiçãosort(lista):
     global comparacoesMerge
     if len(lista) <= 1:
         return lista
     meio = len(lista) // 2
-    esq = mergeSort(lista[:meio])
-    dir = mergeSort(lista[meio:])
-    return merge(esq, dir)
+    esq = partiçãosort(lista[:meio])
+    dir = partiçãosort(lista[meio:])
+    return partição(esq, dir)
 
-def merge(esq, dir):
+def partição(esq, dir):
     global comparacoesMerge, trocasMerge
     resultado = []
     i = j = 0
@@ -81,7 +82,8 @@ def merge(esq, dir):
         else:
             resultado.append(dir[j])
             j += 1
-        trocasMerge += 1          
+        trocasMerge += 1          # cada elemento copiado para o resultado = 1 troca
+    # copia os elementos restantes
     for x in esq[i:]:
         resultado.append(x)
         trocasMerge += 1
@@ -150,10 +152,11 @@ def entradaManual():
 # roda os algoritmos da lista
 def rodarAlgoritmos(listaOriginal):
     algoritmos = [
-        {"nome": "Insertion Sort", "bigO": "O(n²)",       "func": inserção, "global": False},
-        {"nome": "Selection Sort", "bigO": "O(n²)",       "func": seleção, "global": False},
-        {"nome": "Shell Sort",     "bigO": "O(n log² n)", "func": híbrido,     "global": False},
-        {"nome": "Merge Sort",     "bigO": "O(n log n)",  "func": partição,     "global": True},
+        {"nome": "inserção",  "bigO": "O(n²)",       "func": inserção,    "global": False},
+        {"nome": "seleção",   "bigO": "O(n²)",       "func": seleção,     "global": False},
+        {"nome": "híbrido",   "bigO": "O(n log² n)", "func": híbrido,     "global": False},
+        # CORREÇÃO 2: func aponta para partiçãosort (não partição)
+        {"nome": "partição",  "bigO": "O(n log n)",  "func": partiçãosort, "global": True},
     ]
 
     resultados = []
@@ -176,10 +179,11 @@ def rodarAlgoritmos(listaOriginal):
 # menu principal
 def menu():
     print("  MÉTODOS DE ORDENAÇÃO COM BIG-O")
+    print("/" * 20)
     print("  [1] Add vetor manualmente")
     print("  [2] Testes de vetores pequenos, médios e grandes")
     print("  [0] exit")
-    print("-" * 20)
+    print("/" * 20)
     return input("  escolha uma opção: ").strip()
 
 # programa principal
